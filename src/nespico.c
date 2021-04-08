@@ -49,32 +49,41 @@ enum {
 enum {
   LOW = 0,
   HIGH = 1,
-  READ_SLEEP_MS = 1,
+  READ_SLEEP_US = 200,
   PIN_CLOCK = 4,
   PIN_LATCH = 5,
   PIN_DATA = 6,
+};
+
+enum BTN_IDX {
+  // Bit index for each button
+  PHYS_A = 0,
+  PHYS_B = 1,
+  PHYS_SELECT = 2,
+  PHYS_START = 3,
+  PHYS_DOWN = 4,
+  PHYS_UP = 5,
+  PHYS_LEFT = 6,
+  PHYS_RIGHT = 7,
+  PHYS_TOTAL = 8,
 };
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
 void hid_task(void);
+void setup_gpios(void);
 
 /*------------- MAIN -------------*/
 int main(void) {
   board_init();
   tusb_init();
 
-  gpio_init(PIN_CLOCK);
-  gpio_set_dir(PIN_CLOCK, GPIO_OUT);
-  gpio_init(PIN_LATCH);
-  gpio_set_dir(PIN_LATCH, GPIO_OUT);
-  gpio_init(PIN_DATA);
-  gpio_set_dir(PIN_DATA, GPIO_IN);
+  setup_gpios();
 
   while (1) {
     hid_task();
-    tud_task(); // tinyusb device task
+    tud_task();
     led_blinking_task();
   }
 
@@ -105,95 +114,86 @@ void tud_resume_cb(void) { blink_interval_ms = BLINK_MOUNTED; }
 //--------------------------------------------------------------------+
 // USB HID
 //--------------------------------------------------------------------+
+void setup_gpios(void) {
+  gpio_init(PIN_CLOCK);
+  gpio_set_dir(PIN_CLOCK, GPIO_OUT);
+  gpio_init(PIN_LATCH);
+  gpio_set_dir(PIN_LATCH, GPIO_OUT);
+  gpio_init(PIN_DATA);
+  gpio_set_dir(PIN_DATA, GPIO_IN);
+
+  gpio_put(PIN_LATCH, LOW);
+  gpio_put(PIN_CLOCK, LOW);
+}
 
 uint8_t read_nes_controller(void) {
   uint8_t input = 0;
+  gpio_put(PIN_LATCH, HIGH);
+  sleep_us(READ_SLEEP_US);
+  gpio_put(PIN_LATCH, LOW);
+  for (uint32_t i = 0; i < PHYS_TOTAL; i++) {
+    gpio_put(PIN_CLOCK, HIGH);
+    sleep_us(READ_SLEEP_US);
+    input |= gpio_get(PIN_DATA) << i;
+    gpio_put(PIN_CLOCK, LOW);
+    sleep_us(READ_SLEEP_US);
+  }
   gpio_put(PIN_LATCH, LOW);
   gpio_put(PIN_CLOCK, LOW);
-
-  gpio_put(PIN_LATCH, HIGH);
-  sleep_ms(READ_SLEEP_MS);
-  gpio_put(PIN_LATCH, LOW);
-  for (uint32_t i = 0; i < 7; i++) {
-    gpio_put(PIN_CLOCK, HIGH);
-    sleep_ms(READ_SLEEP_MS);
-    gpio_put(PIN_CLOCK, LOW);
-    sleep_ms(READ_SLEEP_MS);
-    input |= gpio_get(PIN_DATA) << i;
-  }
-
-  return input;
-  //    latch.value = True
-  //    sleep(delaytime)
-  //    latch.value = False
-  //    sleep(delaytime)
-  //    button_status[buttons[0]] = data.value
-  //    for x in range(0, 7, 1):
-  //        clock.value = True
-  //        sleep(delaytime)
-  //        clock.value = False
-  //        sleep(delaytime)
-  //        button_status[buttons[x + 1]] = data.value
-
-  //   byte controllerRead() {
-  //   byte controller_data = 0;
-  //   digitalWrite(latch,LOW);
-  //   digitalWrite(clock,LOW);
-  //
-  //   digitalWrite(latch,HIGH);
-  //   delayMicroseconds(2);
-  //   digitalWrite(latch,LOW);
-  //
-  //   controller_data = digitalRead(data);
-  //   for (int i = 1; i <= 7; i++) {
-  //     digitalWrite(clock, HIGH);
-  //     delayMicroseconds(2);
-  //     controller_data = controller_data << 1;
-  //     controller_data = controller_data + digitalRead(data);
-  //     delayMicroseconds(4);
-  //     digitalWrite(clock, LOW);
-  //   }
-  //   return 255 - controller_data;
-  // }
-  return 0;
+  return ~input;
 }
+
+void zero_report(hid_gamepad_report_t *report) {
+  report->x = 0;
+  report->y = 0;
+  report->z = 0;
+  report->rx = 0;
+  report->ry = 0;
+  report->rz = 0;
+  report->buttons = 0;
+  report->hat = 0;
+}
+
+void copy_report(hid_gamepad_report_t *dst, hid_gamepad_report_t *src) {
+  dst->x = src->x;
+  dst->y = src->y;
+  dst->z = src->z;
+  dst->rx = src->rx;
+  dst->ry = src->ry;
+  dst->rz = src->rz;
+  dst->buttons = src->buttons;
+  dst->hat = src->hat;
+}
+
 void update_nes_report(hid_gamepad_report_t *report, uint8_t input) {
-  // Get button data
-  if ("button A")
-    report->buttons |= GAMEPAD_BUTTON_A;
-  if ("button B")
-    report->buttons |= GAMEPAD_BUTTON_B;
-  if ("button start")
-    report->buttons |= GAMEPAD_BUTTON_START;
-  if ("button select")
-    report->buttons |= GAMEPAD_BUTTON_SELECT;
+  zero_report(report);
+  // Button data
+  report->buttons |= (input & (0x1 << PHYS_A)) ? GAMEPAD_BUTTON_A : 0;
+  report->buttons |= (input & (0x1 << PHYS_B)) ? GAMEPAD_BUTTON_B : 0;
+  report->buttons |= (input & (0x1 << PHYS_SELECT)) ? GAMEPAD_BUTTON_SELECT : 0;
+  report->buttons |= (input & (0x1 << PHYS_START)) ? GAMEPAD_BUTTON_START : 0;
 
-  // Get hat data
-  if ("hat up")
-    if ("hat left")
-      report->hat = GAMEPAD_HAT_UP_LEFT;
-    else if ("hat right")
-      report->hat = GAMEPAD_HAT_UP_RIGHT;
-    else
-      report->hat = GAMEPAD_HAT_UP;
-  else if ("hat down")
-    if ("hat left")
-      report->hat = GAMEPAD_HAT_DOWN_LEFT;
-    else if ("hat right")
-      report->hat = GAMEPAD_HAT_DOWN_RIGHT;
-    else
-      report->hat = GAMEPAD_HAT_DOWN;
-  else if ("hat left")
-    report->hat = GAMEPAD_HAT_LEFT;
-  else if ("hat right")
-    report->hat = GAMEPAD_HAT_RIGHT;
+  // Hat data
+  if (input & (0x1 << PHYS_UP))
+    report->hat = (input & (0x1 << PHYS_LEFT))    ? GAMEPAD_HAT_UP_LEFT
+                  : (input & (0x1 << PHYS_RIGHT)) ? GAMEPAD_HAT_UP_RIGHT
+                                                  : GAMEPAD_HAT_UP;
+  else if (input & (0x1 << PHYS_DOWN))
+    report->hat = (input & (0x1 << PHYS_LEFT))    ? GAMEPAD_HAT_DOWN_LEFT
+                  : (input & (0x1 << PHYS_RIGHT)) ? GAMEPAD_HAT_DOWN_RIGHT
+                                                  : GAMEPAD_HAT_DOWN;
+  else
+    report->hat = (input & (0x1 << PHYS_LEFT))    ? GAMEPAD_HAT_LEFT
+                  : (input & (0x1 << PHYS_RIGHT)) ? GAMEPAD_HAT_RIGHT
+                                                  : 0;
 }
+
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
 void hid_task(void) {
   // Poll every 10ms
-  const uint32_t interval_ms = 1000;
+  const uint32_t interval_ms = 1;
   static uint32_t start_ms = 0;
   static hid_gamepad_report_t report;
   static hid_gamepad_report_t current_state = {
@@ -218,26 +218,16 @@ void hid_task(void) {
     tud_remote_wakeup();
   }
   if (tud_hid_ready()) {
-    report.buttons = 0;
-    report.x = 0;
-    report.y = 0;
-    report.z = 0;
-    report.rx = 0;
-    report.ry = 0;
-    report.rz = 0;
-    report.hat = 0;
-
     uint8_t input = read_nes_controller();
     update_nes_report(&report, input);
-
-    // use to avoid send multiple consecutive zero report for keyboard
     if (current_state.hat != report.hat ||
         current_state.buttons != report.buttons) {
       // Send report
       tud_hid_n_gamepad_report(0, 1, report.x, report.y, report.z, report.rz,
                                report.rx, report.ry, report.hat,
                                report.buttons);
-      memcpy(&current_state, &report, sizeof(report));
+      copy_report(&current_state, &report);
+      // memcpy(&current_state, &report, sizeof(report));
     }
   }
 }

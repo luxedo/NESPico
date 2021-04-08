@@ -55,7 +55,7 @@ tusb_desc_device_t const desc_device = {.bLength = sizeof(tusb_desc_device_t),
                                         .bMaxPacketSize0 =
                                             CFG_TUD_ENDPOINT0_SIZE,
 
-                                        .idVendor = 0xCafe,
+                                        .idVendor = 0x91c0,
                                         .idProduct = USB_PID,
                                         .bcdDevice = 0x0100,
 
@@ -120,8 +120,8 @@ uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
 static char pico_serial[17];
 char *string_desc_arr[] = {
     (char[]){0x09, 0x04}, // 0: is supported language is English (0x0409)
-    "PicoNES",            // 1: Manufacturer
-    "PicoNES Controller", // 2: Product
+    "NESPico",            // 1: Manufacturer
+    "NESPico Controller", // 2: Product
     pico_serial           // 3: Serials, should use chip ID
 };
 
@@ -143,7 +143,7 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
       pico_unique_board_id_t pico_board_id;
       pico_get_unique_board_id(&pico_board_id);
       uint64_t serial;
-      memcpy(&serial, pico_board_id.id, sizeof serial);
+      memcpy(&serial, pico_board_id.id, sizeof(serial));
       snprintf(string_desc_arr[3], 16, "%015x", serial);
     }
     // Note: the 0xEE index string is a Microsoft OS 1.0 Descriptors.
