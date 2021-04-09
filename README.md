@@ -15,7 +15,10 @@ instructions for other platforms, and just in general, we recommend you see [Ras
    ```bash
    git clone https://github.com/luxedo/NESPico.git
    cd NESPico
-   git submodule update --init --recursive
+   git submodule update --init  # Thou shalt not be --recursive
+   cd pico-sdk
+   git submodule update --init
+   cd .. 
    ```
 1. Setup a CMake build directory.
    ```bash

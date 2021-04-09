@@ -12,9 +12,10 @@ pico_sdk_init()
 
 add_executable(nespico src/nespico.c src/usb_descriptors.c)
 target_include_directories(nespico PRIVATE include)
-
 target_link_libraries(nespico PRIVATE pico_stdlib pico_unique_id tinyusb_device tinyusb_board)
 pico_add_extra_outputs(nespico)
 
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/nespico.uf2 ${PROJECT_SOURCE_DIR}/bin/nespico.uf2 COPYONLY)
-
+set(NESPICO_BIN nespico.uf2)
+add_custom_command(TARGET nespico POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${NESPICO_BIN} ${PROJECT_SOURCE_DIR}/bin/${NESPICO_BIN}
+)
