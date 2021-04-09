@@ -2,6 +2,12 @@
 
 > A NES controller USB interface with a Raspberry Pi Pico.
 
+Play your favorite retro games with a slightly modified NES controller.
+Just get Raspberry Pi Pico, a soldering iron and a few wires and you
+are golden!!1!
+
+Read this in other languages: [Portuguese](README-pt-BR.md), [English](README.md)
+
 ## Building
 
 These instructions are extremely terse, and Linux-based only. For detailed steps,
@@ -37,6 +43,7 @@ If you don't want to bother and build the binary yourself, then the latest
 version is avaliable at [bin/nespico.uf2](bin/nespico.uf2)
 
 ## Pinout
+NES <=> RPi Pico connection is as follows:
 
 | Fun   | NES    | Pico   |
 | ----- | ------ | ------ |
@@ -46,7 +53,7 @@ version is avaliable at [bin/nespico.uf2](bin/nespico.uf2)
 | Clock | Red    | GPIO 4 |
 | Data  | Yellow | GPIO 6 |
 
-# Links
+## Links
 
 * [Tiny USB](https://github.com/hathach/tinyusb)
 * [Linux Gamepad Specification](https://www.kernel.org/doc/html/latest/input/gamepad.html?highlight=gamepad)
@@ -55,3 +62,11 @@ version is avaliable at [bin/nespico.uf2](bin/nespico.uf2)
 * [Pico HID Gamepad](https://github.com/Drewol/rp2040-gamecon)
 * [NES Controller MicroPython Version](https://github.com/printnplay/Pico-MicroPython/blob/main/NES2USB.py)
 * [Arduino NES Controller](https://github.com/Grouflon/arduino-nes-controller/blob/master/src/nes/nes.ino)
+
+## License
+
+> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
