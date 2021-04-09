@@ -39,8 +39,8 @@ Facil fácil:
 
 ## PreBuilt
 
-Se estiver com preguiça só pega o arquivo pré compilado [bin/nespico.uf2](bin/nespico.uf2)
-e bota no seu `PiPico`.
+Se estiver com preguiça, só pega o arquivo pré compilado 
+[bin/nespico.uf2](bin/nespico.uf2) e bota no seu `PiPico`.
 
 ## Pinout
 

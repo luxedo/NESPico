@@ -17,7 +17,7 @@ instructions for other platforms, and just in general, we recommend you see [Ras
    ```bash
    sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi
    ```
-1. Clone this repo and update submodules.
+1. Clone this repo and update submodules
    ```bash
    git clone https://github.com/luxedo/NESPico.git
    cd NESPico
@@ -26,14 +26,14 @@ instructions for other platforms, and just in general, we recommend you see [Ras
    git submodule update --init
    cd .. 
    ```
-1. Setup a CMake build directory.
+1. Setup a CMake build directory
    ```bash
    mkdir build
    cd build
    cmake ..
    ```
 1. Make your target from the build directory you created. The build will
-replace the prebuilt binary.
+replace the prebuilt binary
    ```bash
    make
    ```
