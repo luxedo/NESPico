@@ -8,6 +8,8 @@ are golden!!1!
 
 Read this in other languages: [Portuguese](README-pt-BR.md), [English](README.md)
 
+![NESPico Gamepad](NESPico.jpg)
+
 ## Building
 
 These instructions are extremely terse, and Linux-based only. For detailed steps,
@@ -24,7 +26,7 @@ instructions for other platforms, and just in general, we recommend you see [Ras
    git submodule update --init  # Thou shalt not be --recursive
    cd pico-sdk
    git submodule update --init
-   cd .. 
+   cd ..
    ```
 1. Setup a CMake build directory
    ```bash
@@ -33,16 +35,18 @@ instructions for other platforms, and just in general, we recommend you see [Ras
    cmake ..
    ```
 1. Make your target from the build directory you created. The build will
-replace the prebuilt binary
+   replace the prebuilt binary
    ```bash
    make
    ```
+
 ## PreBuilt
 
 If you don't want to bother and build the binary yourself, then the latest
 version is avaliable at [bin/nespico.uf2](bin/nespico.uf2)
 
 ## Pinout
+
 NES <=> RPi Pico connection is as follows:
 
 | Fun   | NES    | Pico   |
@@ -55,13 +59,13 @@ NES <=> RPi Pico connection is as follows:
 
 ## Links
 
-* [Tiny USB](https://github.com/hathach/tinyusb)
-* [Linux Gamepad Specification](https://www.kernel.org/doc/html/latest/input/gamepad.html?highlight=gamepad)
-* [MC14021B - NES Controller shift register](https://pdf1.alldatasheet.com/datasheet-pdf/view/11945/ONSEMI/MC14021BCP/+018W7UllREMIcPhBztzvlMb+/datasheet.pdf)
-* [USB HID Reports Descriptors Tutorial](https://eleccelerator.com/tutorial-about-usb-hid-report-descriptors/)
-* [Pico HID Gamepad](https://github.com/Drewol/rp2040-gamecon)
-* [NES Controller MicroPython Version](https://github.com/printnplay/Pico-MicroPython/blob/main/NES2USB.py)
-* [Arduino NES Controller](https://github.com/Grouflon/arduino-nes-controller/blob/master/src/nes/nes.ino)
+- [Tiny USB](https://github.com/hathach/tinyusb)
+- [Linux Gamepad Specification](https://www.kernel.org/doc/html/latest/input/gamepad.html?highlight=gamepad)
+- [MC14021B - NES Controller shift register](https://pdf1.alldatasheet.com/datasheet-pdf/view/11945/ONSEMI/MC14021BCP/+018W7UllREMIcPhBztzvlMb+/datasheet.pdf)
+- [USB HID Reports Descriptors Tutorial](https://eleccelerator.com/tutorial-about-usb-hid-report-descriptors/)
+- [Pico HID Gamepad](https://github.com/Drewol/rp2040-gamecon)
+- [NES Controller MicroPython Version](https://github.com/printnplay/Pico-MicroPython/blob/main/NES2USB.py)
+- [Arduino NES Controller](https://github.com/Grouflon/arduino-nes-controller/blob/master/src/nes/nes.ino)
 
 ## License
 

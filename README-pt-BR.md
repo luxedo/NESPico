@@ -8,6 +8,8 @@ Compra um RPi Pico no FilipeFlop, faz aquela gambiarra e show de bola!!
 
 Leia também em: [Língua Raiz](README-pt-BR.md), [English (Lingua nutella)](README.md)
 
+![NESPico Gamepad](NESPico.jpg)
+
 ## Biudando
 
 Facil fácil:
@@ -39,7 +41,7 @@ Facil fácil:
 
 ## PreBuilt
 
-Se estiver com preguiça, só pega o arquivo pré compilado 
+Se estiver com preguiça, só pega o arquivo pré compilado
 [bin/nespico.uf2](bin/nespico.uf2) e bota no seu `PiPico`.
 
 ## Pinout
